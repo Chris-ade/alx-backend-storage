@@ -1,3 +1,4 @@
+-- Createes a trigger that resets the attribute valid_email only when the email has been changed.
 DELIMITER //
 CREATE PROCEDURE AddBonus (IN user_id INT, IN project_name VARCHAR(255), IN score INT)
 BEGIN
