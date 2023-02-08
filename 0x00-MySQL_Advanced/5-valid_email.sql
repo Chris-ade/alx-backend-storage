@@ -1,29 +1,23 @@
--- Createes a trigger that resets the attribute
--- valid_email only when the email has been changed.
-DELIMITER //
-CREATE PROCEDURE AddBonus (IN user_id INT, IN project_name VARCHAR(255), IN score INT)
+-- Create the stored procedure `AddBonus`
+DELIMITER $$
+CREATE PROCEDURE AddBonus(IN user_id INT, IN project_name VARCHAR(255), IN score INT)
 BEGIN
     DECLARE project_id INT;
 
-    -- Insert project if it doesn't exist
-    INSERT INTO projects (name)
-    SELECT project_name
-    FROM dual
-    WHERE NOT EXISTS (
-        SELECT id FROM projects WHERE name = project_name
-    ) LIMIT 1;
+    -- Check if the project exists
+    SELECT id INTO project_id FROM projects WHERE name = project_name;
+    -- If not, insert a new project
+    IF project_id IS NULL THEN
+        INSERT INTO projects (name) VALUES (project_name);
+        SELECT LAST_INSERT_ID() INTO project_id;
+    END IF;
 
-    SET project_id = (SELECT id FROM projects WHERE name = project_name);
+    -- Insert the new correction into the `corrections` table
+    INSERT INTO corrections (user_id, project_id, score) VALUES (user_id, project_id, score);
 
-    -- Insert correction
-    INSERT INTO corrections (user_id, project_id, score)
-    VALUES (user_id, project_id, score);
-
-    -- Update user's average score
-    UPDATE users SET average_score = (
-        SELECT AVG(score)
-        FROM corrections
-        WHERE user_id = users.id
-    ) WHERE id = user_id;
-END //
+    -- Update the average score of the user
+    UPDATE users
+    SET average_score = (SELECT AVG(score) FROM corrections WHERE user_id = user_id)
+    WHERE id = user_id;
+END $$
 DELIMITER ;
