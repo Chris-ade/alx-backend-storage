@@ -1,5 +1,4 @@
 -- Creates a stored procedure ComputeAverageScoreForUser to compute and store the average score for a student
-DELIMITER $$
 CREATE PROCEDURE AddBonus(IN p_user_id INT, IN p_project_name VARCHAR(255), IN p_score INT)
 BEGIN
     DECLARE project_id INT;
@@ -13,5 +12,4 @@ BEGIN
 
     -- Insert correction for the user and project
     INSERT INTO corrections (user_id, project_id, score) VALUES (p_user_id, project_id, p_score);
-END$$
-DELIMITER ;
+END
