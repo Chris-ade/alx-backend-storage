@@ -1,16 +1,17 @@
 -- Creates a stored procedure ComputeAverageScoreForUser to compute and store the average score for a student
-CREATE PROCEDURE ComputeAverageScoreForUser(IN p_user_id INT)
+DELIMITER $$
+CREATE PROCEDURE AddBonus(IN p_user_id INT, IN p_project_name VARCHAR(255), IN p_score INT)
 BEGIN
-  -- Declare variable to store average score
-  DECLARE average_score FLOAT;
+    DECLARE project_id INT;
 
-  -- Compute the average score by summing all scores for the user and dividing by the number of scores
-  SELECT AVG(score) INTO average_score 
-  FROM corrections 
-  WHERE user_id = p_user_id;
+    -- Check if project exists, if not insert it
+    SELECT id INTO project_id FROM projects WHERE name = p_project_name;
+    IF NOT FOUND THEN
+        INSERT INTO projects (name) VALUES (p_project_name);
+        SET project_id = LAST_INSERT_ID();
+    END IF;
 
-  -- Update the user's average score in the users table
-  UPDATE users 
-  SET average_score = average_score 
-  WHERE id = p_user_id;
-END;
+    -- Insert correction for the user and project
+    INSERT INTO corrections (user_id, project_id, score) VALUES (p_user_id, project_id, p_score);
+END$$
+DELIMITER ;
