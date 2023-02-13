@@ -1,36 +1,6 @@
-#!/usr/bin/env python3
-
-"""
-This module contains a function that adds a new attribute to a document in the collection school.
-"""
-
-import pymongo
-import sys
-
-def add_attribute_to_document(db_name):
-    """
-    This function adds a new attribute to a document in the collection school.
-    """
-    # Connect to the MongoDB instance
-    client = pymongo.MongoClient("mongodb://localhost:27017/")
-
-    # Access the database specified as a command-line option
-    db = client[db_name]
-
-    # Access the collection school
-    school = db["school"]
-
-    # Update all documents with name="Holberton school"
-    school.update_many({"name": "Holberton school"}, {"$set": {"address": "972 Mission street"}})
-
-    # Print a message to indicate that the update was successful
-    print("Attribute added to all documents with name='Holberton school'")
-
-if __name__ == "__main__":
-    # Check if a database name was passed as a command-line option
-    if len(sys.argv) != 2:
-        print("Error: Please specify a database name")
-        sys.exit(1)
-
-    db_name = sys.argv[1]
-    add_attribute_to_document(db_name)
+// Adds a new attribute to a document in the collection school
+db.school.update(
+    {name: "Holberton school"},
+    {$set: {address: "972 Mission street"}},
+    {multi: true}
+)
