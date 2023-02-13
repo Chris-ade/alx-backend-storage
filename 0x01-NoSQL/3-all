@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+
+"""
+This module contains a function that lists all documents in the collection school.
+"""
+
+import pymongo
+import sys
+
+def list_documents(db_name):
+    """
+    This function lists all documents in the collection school.
+    """
+    # Connect to the MongoDB instance
+    client = pymongo.MongoClient("mongodb://localhost:27017/")
+
+    # Access the database specified as a command-line option
+    db = client[db_name]
+
+    # Access the collection school
+    school = db["school"]
+
+    # Print all documents in the collection school
+    for doc in school.find():
+        print(doc)
+
+if __name__ == "__main__":
+    # Check if a database name was passed as a command-line option
+    if len(sys.argv) != 2:
+        print("Error: Please specify a database name")
+        sys.exit(1)
+
+    db_name = sys.argv[1]
+    list_documents(db_name)
