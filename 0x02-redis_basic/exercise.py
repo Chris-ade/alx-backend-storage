@@ -47,30 +47,6 @@ def call_history(method: Callable) -> Callable:
 
     return wrapper
 
-def replay(func: Any) -> None:
-    """ 
-    Display the history of calls of a particular function 
-    """
-    redis_conn = redis.Redis()
-    func_name = func.__name__
-    keys = redis_conn.keys()
-    calls = [key.decode('utf-8') for key in keys if key.decode('utf-8').startswith(func_name + ':')]
-
-    print(f"{func_name} was called {len(calls)} times:")
-
-    for call in calls:
-        inputs = redis_conn.lrange(call + ':inputs', 0, -1)
-        outputs = redis_conn.lrange(call + ':outputs', 0, -1)
-        arg_strings = [arg.decode('utf-8') for arg in inputs]
-        ret_strings = [ret.decode('utf-8') for ret in outputs]
-        arg_list = [eval(arg_string) for arg_string in arg_strings]
-        ret_list = [eval(ret_string) for ret_string in ret_strings]
-
-        call_string = f"{func_name}(" + ", ".join(arg_strings) + ")"
-        ret_string = ret_strings[0]
-
-        print(f"{call_string} -> {ret_string}")
-
 class Cache:
     """
     Cache redis class
